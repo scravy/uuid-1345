@@ -1,4 +1,4 @@
-var UUID = require('./index');
+var UUID = require('../index');
 
 UUID.v1({}, function (err, id) {
 
