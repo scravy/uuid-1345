@@ -94,7 +94,7 @@ Generates a random, version 4, UUID. Does not take any options.
 
 ---
 
-### `UUID.v3(options, callback)` / `UUID.v5(options, callback)`
+### `UUID.v3(options, cb)` / `UUID.v5(options, cb)`
 
 #### Options
 
