@@ -106,7 +106,7 @@ Both `name` and `namespace` are required options.
 This must be a valid UUID. A few pre-defined namespaces are available in `UUID.namespace`:
 
 ```JavaScript
-// form rfc4122#appendix-C
+// from rfc4122#appendix-C
 UUID.namespace = {
     dns:  "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
     url:  "6ba7b811-9dad-11d1-80b4-00c04fd430c8",
