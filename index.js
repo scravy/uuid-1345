@@ -1,4 +1,3 @@
-var extend = require('node.extend');
 var sprintf = require('sprintf-js').sprintf;
 
 var UUID = {};
