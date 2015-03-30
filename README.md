@@ -1,4 +1,4 @@
-uuid-12345
+uuid-1345
 ==========
 
 Generate UUIDs of versions 1, 3, 4, and 5.
