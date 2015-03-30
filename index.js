@@ -38,6 +38,7 @@ function uuidToString(b) {
 }
 UUID.stringify = uuidToString;
 
+// read stringified uuid into a Buffer
 function parseUUID(string) {
     
     var buffer = new Buffer(16);
@@ -57,9 +58,15 @@ function wrap(func, version) {
 
     return function (options, callback) {
 
-        if (typeof options == 'function') {
+        if (typeof options === 'function') {
             callback = options;
             options = {};
+        } else if (typeof options !== 'object') {
+            options = {};
+        }
+        if (typeof callback !== 'function') {
+            console.warn('no callback given');
+            callback = function () {};
         }
 
         func.call(UUID, options, function (err, buffer) {
@@ -104,15 +111,13 @@ function getVariant(bits) {
     return 'future';
 }
 
-UUID.v1 = wrap(require('./uuid/v1'), 1);
+UUID.v1 = wrap(require('./lib/v1'), 1);
 
-UUID.v2 = wrap(require('./uuid/v2'), 2);
+UUID.v3 = wrap(require('./lib/named')('md5'), 3);
 
-UUID.v3 = wrap(require('./uuid/named')('md5'), 3);
+UUID.v4 = wrap(require('./lib/v4'), 4);
 
-UUID.v4 = wrap(require('./uuid/v4'), 4);
-
-UUID.v5 = wrap(require('./uuid/named')('sha1'), 5);
+UUID.v5 = wrap(require('./lib/named')('sha1'), 5);
 
 UUID.check = function (uuid, offset) {
 
