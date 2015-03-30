@@ -144,6 +144,17 @@ UUID.check = function (uuid, offset) {
         if (uuid.length < offset + 16) {
             return false;
         }
+
+        for (var i = 0; i < 16; i++) {
+            if (buffer[offset + i] !== 0) {
+                return { version: undefined, variant: 'nil' };
+            }
+        }
+        
+        return {
+            version: (uuid[6] & 0xf0) >> 4,
+            variant: getVariant((uuid[8] & 0xc0) >> 5)
+        };
     }
 };
 
