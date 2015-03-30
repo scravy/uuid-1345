@@ -5,9 +5,9 @@
   "keywords": [
     "uuid"
   ],
-  "main": "uuid.js",
+  "main": "index.js",
   "scripts": {
-    "test": "node examples/example2"
+    "test": "mocha test"
   },
   "author": "Julian Fleischer",
   "license": "MIT",
