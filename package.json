@@ -3,11 +3,14 @@
   "version": "0.12.0",
   "description": "Generate UUIDs of versions 1, 3, 4, and 5.",
   "keywords": [
-    "uuid"
+    "uuid",
+    "guid",
+    "rfc4122"
   ],
   "main": "index.js",
   "scripts": {
-    "test": "mocha test"
+    "build": "gulp",
+    "test": "gulp test"
   },
   "author": "Julian Fleischer",
   "license": "MIT",
@@ -24,6 +27,9 @@
     "sprintf-js": "^1.0.2"
   },
   "devDependencies": {
-    "gulp": "^3.8.11"
+    "async": "^0.9.0",
+    "gulp": "^3.8.11",
+    "knuth-shuffle": "^1.0.1",
+    "node-uuid": "^1.4.3"
   }
 }

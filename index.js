@@ -78,6 +78,8 @@ UUID.parse = parseUUID;
 
 function wrap(func, version) {
 
+    var func = func.bind(UUID);
+
     return function (options, callback) {
 
         switch (typeof options) {
@@ -127,7 +129,6 @@ function wrap(func, version) {
         }
 
         var theResult;
-        var functionCall = func.bind(UUID, options, handleResult);
         if (options.sync) {
             callback = function (err, result) {
                 if (err) {
@@ -135,9 +136,11 @@ function wrap(func, version) {
                 }
                 theResult = result;
             }
-            functionCall();
+            func(options, handleResult);
         } else {
-            process.nextTick(functionCall);
+            setImmediate(function () {
+                func(options, handleResult)
+            });
         }
 
         return theResult;
