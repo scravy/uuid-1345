@@ -3,10 +3,21 @@ uuid-1345
 
 [![Build Status](https://travis-ci.org/scravy/uuid-1345.svg?branch=master)](https://travis-ci.org/scravy/uuid-1345)
 
-Generate v1, v3, v4, and v5 UUIDs, adhering to [RFC 4122](http://tools.ietf.org/html/rfc4122).
+Generate `v1`, `v3`, `v4`, and `v5` UUIDs, adhering to [RFC 4122](http://tools.ietf.org/html/rfc4122).
 
     npm install --save uuid-1345
 
+Features:
+
++ Actually uses your MAC address for `v1` UUIDs
++ Synchronous + Asynchronous API
++ Returns `string` or `Buffer`, as you wish
++ Works in NodeJS + io.js (see build status above)
++ Allows you to inspect uuids (check the `check` function)
+
+Un-Features:
+
++ Does not work in the browser due to the use of `crypto`.
 
 Examples
 --------
@@ -99,7 +110,7 @@ as node id during the lifetime of your process.
 
 The latter behaviour can be enforced by specifying `{ mac: false }`.
 
-It is also possible to provide a cusom MAC address: `{ mac: 'ac:00:00:ac:ff:ff' }`.
+It is also possible to provide a custom MAC address: `{ mac: 'ac:00:00:ac:ff:ff' }`.
 
 The MAC address can also be specified as a `Buffer` of 6 bytes.
 

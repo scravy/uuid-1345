@@ -98,6 +98,7 @@ function wrap(func, version) {
         }
 
         var theResult;
+        var functionCall = func.bind(UUID, options, handleResult);
         if (options.sync) {
             callback = function (err, result) {
                 if (err) {
@@ -105,8 +106,10 @@ function wrap(func, version) {
                 }
                 theResult = result;
             }
+            functionCall();
+        } else {
+            process.nextTick(functionCall);
         }
-        func.call(UUID, options, handleResult);
 
         return theResult;
     };
