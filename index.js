@@ -1,4 +1,8 @@
 var sprintf = require('sprintf-js').sprintf;
+var v1 = require('./lib/v1');
+var v3 = require('./lib/named')('md5');
+var v4 = require('./lib/v4');
+var v5 = require('./lib/named')('sha1');
 
 var UUID = {};
 
@@ -63,12 +67,9 @@ function wrap(func, version) {
         } else if (typeof options !== 'object') {
             options = {};
         }
-        if (typeof callback !== 'function') {
-            console.warn('no callback given');
-            callback = function () {};
-        }
+        options.sync = typeof callback !== 'function';
 
-        func.call(UUID, options, function (err, buffer) {
+        function handleResult(err, buffer) {
 
             if (err) {
                 callback(err, null);
@@ -94,9 +95,30 @@ function wrap(func, version) {
             }
 
             callback(null, uuid);
-        });
+        }
+
+        var theResult;
+        if (options.sync) {
+            callback = function (err, result) {
+                if (err) {
+                    throw err;
+                }
+                theResult = result;
+            }
+        }
+        func.call(UUID, options, handleResult);
+
+        return theResult;
     };
 }
+
+UUID.v1 = wrap(v1, 1);
+
+UUID.v3 = wrap(v3, 3);
+
+UUID.v4 = wrap(v4, 4);
+
+UUID.v5 = wrap(v5, 5);
 
 function getVariant(bits) {
     // according to rfc4122#section-4.1.1
@@ -109,15 +131,6 @@ function getVariant(bits) {
     }
     return 'future';
 }
-
-UUID.v1 = wrap(require('./lib/v1'), 1);
-
-UUID.v3 = wrap(require('./lib/named')('md5'), 3);
-
-UUID.v4 = wrap(require('./lib/v4'), 4);
-
-UUID.v5 = wrap(require('./lib/named')('sha1'), 5);
-
 UUID.check = function (uuid, offset) {
 
     if (typeof uuid === 'string') {

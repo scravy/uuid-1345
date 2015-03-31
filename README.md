@@ -57,14 +57,29 @@ API
 ---
 
 ```JavaScript
-UUID.vX([options], callback);
+UUID.vX([options], [callback]);
 ```
 
 where `vX` is one of `v1`, `v3`, `v4`, or `v5`.
 
+`callback` is always optional, you can use the API asynchronously and synchronously.
+
+`options` that are recognized by every generator are:
+
+**`case: 'lower' | 'upper'`**
+
+By default the generated UUIDs are lowercase.
+You can change this to uppercase by specifying `upper`.
+
+**`encoding: 'ascii' | 'binary'`**
+
+By default the generated UUIDs are ASCII strings.
+You can change this to a `Buffer` object by specifying `binary`.
+
+
 ---
 
-### `UUID.v1([options], callback)`
+### `UUID.v1([options], [callback])`
 
 Generates a time based UUID. Note that you can not generate more than
 10000 UUIDs per second. Should this (highly unlikely) scenario happen,
@@ -90,13 +105,13 @@ The MAC address can also be specified as a `Buffer` of 6 bytes.
 
 ---
 
-### `UUID.v4(callback)`
+### `UUID.v4([options], [callback])`
 
 Generates a random, version 4, UUID. Does not take any options.
 
 ---
 
-### `UUID.v3(options, cb)` / `UUID.v5(options, cb)`
+### `UUID.v3(options, [cb])` / `UUID.v5(options, [cb])`
 
 #### Options
 

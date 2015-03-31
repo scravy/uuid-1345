@@ -3,6 +3,20 @@ var UUID = require("../index");
 
 describe("v3 - name based with MD5", function () {
 
+    it("generates a v3 UUID (async)", function (done) {
+        UUID.v3({
+            name: "something",
+            namespace: UUID.v4()
+        }, function (err, result) {
+            assert.equal(UUID.check(result).version, 3);
+            done();
+        });
+    });
+
+    it("generates a v3 UUID (sync)", function () {
+        assert.equal(UUID.check(UUID.v3({ name: "something", namespace: UUID.v4() }).version, 3));
+    });
+
     it("generates the correct uuid for `http://github.com`", function (done) {
         UUID.v3({
             namespace: UUID.namespace.url,

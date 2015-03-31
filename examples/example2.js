@@ -1,62 +1,65 @@
 var UUID = require('../index');
 
-UUID.v1({}, function (err, id) {
+setTimeout(function () {
 
-    if (err) {
-        throw err;
-    }
-    console.log(id);
-    console.log(JSON.stringify(UUID.check(id), null, 2));
+    UUID.v1({}, function (err, id) {
 
-    console.log(UUID.stringify(UUID.parse(id)));
-});
+        if (err) {
+            throw err;
+        }
+        console.log(id);
+        console.log(JSON.stringify(UUID.check(id), null, 2));
 
-UUID.v1({}, function (err, id) {
+        console.log(UUID.stringify(UUID.parse(id)));
+    });
 
-    if (err) {
-        throw err;
-    }
-    console.log(id);
-    console.log(JSON.stringify(UUID.check(id), null, 2));
+    UUID.v1({}, function (err, id) {
 
-    console.log(UUID.stringify(UUID.parse(id)));
-});
+        if (err) {
+            throw err;
+        }
+        console.log(id);
+        console.log(JSON.stringify(UUID.check(id), null, 2));
 
-UUID.v4(function (err, id) {
+        console.log(UUID.stringify(UUID.parse(id)));
+    });
 
-    console.log(id);
-    console.log(JSON.stringify(UUID.check(id), null, 2));
+    UUID.v4(function (err, id) {
 
-    console.log(UUID.stringify(UUID.parse(id)));
-});
+        console.log(id);
+        console.log(JSON.stringify(UUID.check(id), null, 2));
 
-UUID.v3({
-    namespace: UUID.namespace.url,
-    name: "http://github.com"
-}, function (err, id) {
+        console.log(UUID.stringify(UUID.parse(id)));
+    });
 
-    if (err) {
-        throw err;
-    }
+    UUID.v3({
+        namespace: UUID.namespace.url,
+        name: "http://github.com"
+    }, function (err, id) {
 
-    console.log(id);
-    console.log(JSON.stringify(UUID.check(id), null, 2));
+        if (err) {
+            throw err;
+        }
 
-    console.log(UUID.stringify(UUID.parse(id)));
-});
+        console.log(id);
+        console.log(JSON.stringify(UUID.check(id), null, 2));
 
-UUID.v5({
-    namespace: UUID.namespace.url,
-    name: "http://github.com"
-}, function (err, id) {
+        console.log(UUID.stringify(UUID.parse(id)));
+    });
 
-    if (err) {
-        throw err;
-    }
+    UUID.v5({
+        namespace: UUID.namespace.url,
+        name: "http://github.com"
+    }, function (err, id) {
 
-    console.log(id);
-    console.log(JSON.stringify(UUID.check(id), null, 2));
+        if (err) {
+            throw err;
+        }
 
-    console.log(UUID.stringify(UUID.parse(id)));
-});
+        console.log(id);
+        console.log(JSON.stringify(UUID.check(id), null, 2));
 
+        console.log(UUID.stringify(UUID.parse(id)));
+    });
+
+}, 10);
