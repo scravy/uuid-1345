@@ -1,6 +1,6 @@
 {
   "name": "uuid-1345",
-  "version": "0.9.9",
+  "version": "0.10.1",
   "description": "Generate UUIDs of versions 1, 3, 4, and 5.",
   "keywords": [
     "uuid"
