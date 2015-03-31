@@ -1,7 +1,10 @@
+"use strict";
+
 var sprintf = require('sprintf-js').sprintf;
+var crypto = require('crypto');
 var v1 = require('./lib/v1');
 var v3 = require('./lib/named')('md5');
-var v4 = require('./lib/v4');
+//var v4 = require('./lib/v4');
 var v5 = require('./lib/named')('sha1');
 
 // UUID class
@@ -80,6 +83,31 @@ function wrap(func, version) {
 
     var func = func.bind(UUID);
 
+    function handleResult(options, buffer) {
+
+        // set version
+        buffer[6] = (buffer[6] & 0x0f) | version;
+
+        // set variant
+        buffer[8] = (buffer[8] & 0x3f) | 0x80;
+
+        switch (options.encoding) {
+            case 'binary':
+                return buffer;
+            case 'object':
+                return new UUID(buffer);
+        }
+
+        // turn buffer into string
+        var uuid = uuidToString(buffer);
+        
+        if (options.case == 'upper') {
+            uuid = uuid.toUpperCase();
+        }
+
+        return uuid;
+    }
+
     return function (options, callback) {
 
         switch (typeof options) {
@@ -94,56 +122,23 @@ function wrap(func, version) {
             default:
                 options = {};
         }
-        options.sync = typeof callback !== 'function';
+        var sync = options.sync = typeof callback !== 'function';
 
-        function handleResult(err, buffer) {
-
-            if (err) {
-                callback(err, null);
-                return;
-            }
-
-            // set version
-            buffer[6] = (buffer[6] & 0x0f) | (version << 4);
-
-            // set variant
-            buffer[8] = (buffer[8] & 0x3f) | 0x80;
-
-            switch (options.encoding) {
-                case 'binary':
-                    callback(null, buffer);
-                    return;
-                case 'object':
-                    callback(null, new UUID(buffer));
-                    return;
-            }
-
-            // turn buffer into string
-            var uuid = uuidToString(buffer);
-            
-            if (options.case == 'upper') {
-                uuid = uuid.toUpperCase();
-            }
-
-            callback(null, uuid);
-        }
-
-        var theResult;
         if (options.sync) {
-            callback = function (err, result) {
-                if (err) {
-                    throw err;
-                }
-                theResult = result;
+            var result = func(options);
+            if (typeof result === 'string') {
+                throw new Error(result);
             }
-            func(options, handleResult);
+            return handleResult(options, result);
         } else {
             setImmediate(function () {
-                func(options, handleResult)
+                var result = func(options);
+                if (typeof result === 'string') {
+                    return callback(result);
+                }
+                callback(null, handleResult(options, result));
             });
         }
-
-        return theResult;
     };
 }
 
@@ -211,18 +206,18 @@ UUID.nil = new UUID("00000000-0000-0000-0000-000000000000");
 
 // from rfc4122#appendix-C
 UUID.namespace = {
-    dns: new UUID("6ba7b810-9dad-11d1-80b4-00c04fd430c8"),
-    url: new UUID("6ba7b811-9dad-11d1-80b4-00c04fd430c8"),
-    oid: new UUID("6ba7b812-9dad-11d1-80b4-00c04fd430c8"),
+    dns:  new UUID("6ba7b810-9dad-11d1-80b4-00c04fd430c8"),
+    url:  new UUID("6ba7b811-9dad-11d1-80b4-00c04fd430c8"),
+    oid:  new UUID("6ba7b812-9dad-11d1-80b4-00c04fd430c8"),
     x500: new UUID("6ba7b814-9dad-11d1-80b4-00c04fd430c8")
 };
 
-UUID.v1 = wrap(v1, 1);
+UUID.v1 = wrap(v1, 0x10);
 
-UUID.v3 = wrap(v3, 3);
+UUID.v3 = wrap(v3, 0x30);
 
-UUID.v4 = wrap(v4, 4);
+UUID.v4 = wrap(function () { return crypto.randomBytes(16); }, 0x40);
 
-UUID.v5 = wrap(v5, 5);
+UUID.v5 = wrap(v5, 0x50);
 
 module.exports = UUID;

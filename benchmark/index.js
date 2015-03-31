@@ -1,5 +1,3 @@
-(function (_global) {
-
 "use strict";
 
 var control = require('async');
@@ -170,5 +168,3 @@ control.waterfall(warmUpTasks, function (err, result) {
         });
     }, 2000);
 });
-
-}).call(this);
