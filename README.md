@@ -114,6 +114,11 @@ It is also possible to provide a custom MAC address: `{ mac: 'ac:00:00:ac:ff:ff'
 
 The MAC address can also be specified as a `Buffer` of 6 bytes.
 
+**`clockSeq: integer`**
+
+The `clockSeq` is initialized with an arbitrary number.
+You can specify a custom value for `clockSeq`.
+
 ---
 
 ### `UUID.v4([options], [callback])`
