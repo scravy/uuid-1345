@@ -64,6 +64,23 @@ might result in:
         39888f87-fb62-5988-a425-b2ea63f5b81e
 
 
+### object-oriented `UUID` interface
+
+```JavaScript
+var uuid = new UUID('39888f87-fb62-5988-a425-b2ea63f5b81e');
+console.log( uuid.version    );
+console.log( uuid.variant    );
+console.log( uuid.toString() );
+console.log( uuid.toBuffer() );
+```
+
+```JavaScript
+5
+rfc4122
+39888f87-fb62-5988-a425-b2ea63f5b81e
+<Buffer 39 88 8f 87 fb 62 59 88 a4 25 b2 ea 63 f5 b8 1e>
+```
+
 API
 ---
 
@@ -82,11 +99,13 @@ where `vX` is one of `v1`, `v3`, `v4`, or `v5`.
 By default the generated UUIDs are lowercase.
 You can change this to uppercase by specifying `upper`.
 
-**`encoding: 'ascii' | 'binary'`**
+**`encoding: 'ascii' | 'binary' | 'object'`**
 
 By default the generated UUIDs are ASCII strings.
+
 You can change this to a `Buffer` object by specifying `binary`.
 
+Or to a `UUID` object by specifying `object`.
 
 ---
 

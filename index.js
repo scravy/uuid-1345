@@ -4,20 +4,39 @@ var v3 = require('./lib/named')('md5');
 var v4 = require('./lib/v4');
 var v5 = require('./lib/named')('sha1');
 
-var UUID = {};
+// UUID class
+var UUID = function (uuid) {
+    
+    var check = UUID.check(uuid);
+    if (!check) {
+        throw "not a UUID";
+    }
 
-// according to rfc4122#section-4.1.7
-UUID.nil = "00000000-0000-0000-0000-000000000000";
+    this.version = check.version;
+    this.variant = check.variant;
 
-// from rfc4122#appendix-C
-UUID.namespace = {
-    dns: "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
-    url: "6ba7b811-9dad-11d1-80b4-00c04fd430c8",
-    oid: "6ba7b812-9dad-11d1-80b4-00c04fd430c8",
-    x500: "6ba7b814-9dad-11d1-80b4-00c04fd430c8"
+    this[check.format] = uuid;
 };
 
-var hex2byte = []; // lookup table hex to byte
+UUID.prototype.toString = function () {
+    if (!this.ascii) {
+        this.ascii = UUID.stringify(this.binary);
+    }
+    return this.ascii;
+};
+
+UUID.prototype.toBuffer = function () {
+    if (!this.binary) {
+        this.binary = UUID.parse(this.ascii);
+    }
+    return new Buffer(this.binary);
+};
+
+UUID.prototype.inspect = function () {
+    return "UUID v" + this.version + " " + this.toString();
+};
+
+var hex2byte = {}; // lookup table hex to byte
 for (var i = 0; i < 256; i++) {
     hex2byte[sprintf('%02x', i)] = i;
 }
@@ -61,11 +80,17 @@ function wrap(func, version) {
 
     return function (options, callback) {
 
-        if (typeof options === 'function') {
-            callback = options;
-            options = {};
-        } else if (typeof options !== 'object') {
-            options = {};
+        switch (typeof options) {
+            case 'function':
+                callback = options
+                break;
+            case 'string':
+                options = { name: options };
+                break;
+            case 'object':
+                break;
+            default:
+                options = {};
         }
         options.sync = typeof callback !== 'function';
 
@@ -82,9 +107,13 @@ function wrap(func, version) {
             // set variant
             buffer[8] = (buffer[8] & 0x3f) | 0x80;
 
-            if (options.encoding === 'binary') {
-                callback(null, buffer);
-                return;
+            switch (options.encoding) {
+                case 'binary':
+                    callback(null, buffer);
+                    return;
+                case 'object':
+                    callback(null, new UUID(buffer));
+                    return;
             }
 
             // turn buffer into string
@@ -115,25 +144,20 @@ function wrap(func, version) {
     };
 }
 
-UUID.v1 = wrap(v1, 1);
-
-UUID.v3 = wrap(v3, 3);
-
-UUID.v4 = wrap(v4, 4);
-
-UUID.v5 = wrap(v5, 5);
-
 function getVariant(bits) {
     // according to rfc4122#section-4.1.1
-    if (bits < 4) {
-        return 'ncs';
-    } else if (bits < 6) {
-        return 'rfc4122';
-    } else if (bits < 7) {
-        return 'microsoft';
+    switch (bits) {
+        case 0: case 1: case 3:
+            return 'ncs';
+        case 4: case 5:
+            return 'rfc4122';
+        case 6:
+            return 'microsoft';
+        default:
+            return 'future';
     }
-    return 'future';
 }
+
 UUID.check = function (uuid, offset) {
 
     if (typeof uuid === 'string') {
@@ -143,13 +167,14 @@ UUID.check = function (uuid, offset) {
             return false;
         }
 
-        if (uuid == module.exports.nil) {
-            return { version: undefined, variant: 'nil' };
+        if (uuid == "00000000-0000-0000-0000-000000000000") {
+            return { version: undefined, variant: 'nil', format: 'ascii' };
         }
 
         return {
             version: (hex2byte[uuid[14] + uuid[15]] & 0xf0) >> 4,
-            variant: getVariant((hex2byte[uuid[19] + uuid[20]] & 0xe0) >> 5)
+            variant: getVariant((hex2byte[uuid[19] + uuid[20]] & 0xe0) >> 5),
+            format: 'ascii'
         };
     }
 
@@ -161,16 +186,40 @@ UUID.check = function (uuid, offset) {
         }
 
         for (var i = 0; i < 16; i++) {
-            if (buffer[offset + i] !== 0) {
-                return { version: undefined, variant: 'nil' };
+            if (uuid[offset + i] !== 0) {
+                break;
             }
         }
+        if (i == 16) {
+            return { version: undefined, variant: 'nil', format: 'binary' };
+        }
+
         
         return {
-            version: (uuid[6] & 0xf0) >> 4,
-            variant: getVariant((uuid[8] & 0xe0) >> 5)
+            version: (uuid[offset + 6] & 0xf0) >> 4,
+            variant: getVariant((uuid[offset + 8] & 0xe0) >> 5),
+            format: 'binary'
         };
     }
 };
+
+// according to rfc4122#section-4.1.7
+UUID.nil = new UUID("00000000-0000-0000-0000-000000000000");
+
+// from rfc4122#appendix-C
+UUID.namespace = {
+    dns: new UUID("6ba7b810-9dad-11d1-80b4-00c04fd430c8"),
+    url: new UUID("6ba7b811-9dad-11d1-80b4-00c04fd430c8"),
+    oid: new UUID("6ba7b812-9dad-11d1-80b4-00c04fd430c8"),
+    x500: new UUID("6ba7b814-9dad-11d1-80b4-00c04fd430c8")
+};
+
+UUID.v1 = wrap(v1, 1);
+
+UUID.v3 = wrap(v3, 3);
+
+UUID.v4 = wrap(v4, 4);
+
+UUID.v5 = wrap(v5, 5);
 
 module.exports = UUID;
