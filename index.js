@@ -1,4 +1,4 @@
-"use strict";
+(function () { "use strict";
 
 var sprintf = require('sprintf-js').sprintf;
 var crypto = require('crypto');
@@ -40,14 +40,18 @@ UUID.prototype.inspect = function () {
 };
 
 var hex2byte = {}; // lookup table hex to byte
-for (var i = 0; i < 256; i++) {
-    hex2byte[sprintf('%02x', i)] = i;
-}
+(function () {
+    for (var i = 0; i < 256; i++) {
+        hex2byte[sprintf('%02x', i)] = i;
+    }
+}());
 
 var byte2hex = []; // lookup table byte to hex
-for (var i = 0; i < 256; i++) {
-    byte2hex[i] = sprintf('%02x', i);
-}
+(function () {
+    for (var i = 0; i < 256; i++) {
+        byte2hex[i] = sprintf('%02x', i);
+    }
+}());
 
 // format Buffer as string "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 function uuidToString(b) {
@@ -81,7 +85,7 @@ UUID.parse = parseUUID;
 
 function wrap(func, version) {
 
-    var func = func.bind(UUID);
+    func = func.bind(UUID);
 
     function handleResult(options, buffer) {
 
@@ -112,7 +116,7 @@ function wrap(func, version) {
 
         switch (typeof options) {
             case 'function':
-                callback = options
+                callback = options;
                 break;
             case 'string':
                 options = { name: options };
@@ -123,7 +127,7 @@ function wrap(func, version) {
                 options = {};
         }
 
-        if (options.sync = typeof callback !== 'function') {
+        if ((options.sync = typeof callback !== 'function')) {
             var result = func(options);
             if (typeof result === 'string') {
                 throw new Error(result);
@@ -220,3 +224,5 @@ UUID.v4 = wrap(function () { return crypto.randomBytes(16); }, 0x40);
 UUID.v5 = wrap(v5, 0x50);
 
 module.exports = UUID;
+
+}());

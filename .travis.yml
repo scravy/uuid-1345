@@ -1,13 +1,17 @@
 language: node_js
 node_js:
+  - stable
   - "0.12"
   - "0.11"
   - "0.10"
   - iojs
   - iojs-v1.0.4
-before_install: npm install -g mocha
+before_install:
+  - npm install -g gulp
+  - npm install -g mocha
 install:
   - npm install
+  - gulp
 script:
   - mocha test
 after_script:
