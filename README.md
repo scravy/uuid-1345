@@ -3,7 +3,7 @@ uuid-1345
 
 [![Build Status](https://travis-ci.org/scravy/uuid-1345.svg?branch=master)](https://travis-ci.org/scravy/uuid-1345)
 
-Generate UUIDs of versions 1, 3, 4, and 5.
+Generate v1, v3, v4, and v5 UUIDs, adhering to [RFC 4122](http://tools.ietf.org/html/rfc4122).
 
     npm install --save uuid-1345
 
