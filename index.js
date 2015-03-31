@@ -133,7 +133,7 @@ UUID.check = function (uuid, offset) {
 
         return {
             version: (hex2byte[uuid[14] + uuid[15]] & 0xf0) >> 4,
-            variant: getVariant((hex2byte[uuid[19] + uuid[20]] & 0xc0) >> 5)
+            variant: getVariant((hex2byte[uuid[19] + uuid[20]] & 0xe0) >> 5)
         };
     }
 
@@ -152,7 +152,7 @@ UUID.check = function (uuid, offset) {
         
         return {
             version: (uuid[6] & 0xf0) >> 4,
-            variant: getVariant((uuid[8] & 0xc0) >> 5)
+            variant: getVariant((uuid[8] & 0xe0) >> 5)
         };
     }
 };
