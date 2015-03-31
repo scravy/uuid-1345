@@ -14,7 +14,7 @@ Features:
 + Returns `string` or `Buffer`, as you wish
 + Works in NodeJS + io.js (see build status above)
 + Allows you to inspect uuids (check the `check` function)
-+ It's fast (see (PERFORMANCE.md)[./PERFORMANCE.md]).
++ It's fast (see [PERFORMANCE.md](./PERFORMANCE.md)).
 
 Un-Features:
 
