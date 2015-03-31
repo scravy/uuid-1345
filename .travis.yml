@@ -8,3 +8,7 @@ node_js:
 before_install: npm install -g mocha
 install:
   - npm install
+script:
+  - mocha test
+after_script:
+  - node benchmark
