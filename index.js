@@ -122,9 +122,8 @@ function wrap(func, version) {
             default:
                 options = {};
         }
-        var sync = options.sync = typeof callback !== 'function';
 
-        if (options.sync) {
+        if (options.sync = typeof callback !== 'function') {
             var result = func(options);
             if (typeof result === 'string') {
                 throw new Error(result);
