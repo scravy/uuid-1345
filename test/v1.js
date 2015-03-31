@@ -2,11 +2,7 @@ var assert = require('assert');
 var macaddress = require('node-macaddress');
 var UUID = require("../index");
 
-macaddress.one(console.log.bind(null, "%s %s"));
-UUID.v1(console.log.bind(null, "%s %s"));
-console.log(UUID.v1());
-
-describe("v1 - time based", function () {
+describe("UUID.v1", function () {
 
     it("generates a v1 UUID (async)", function (done) {
         UUID.v1(function (err, result) {

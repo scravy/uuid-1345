@@ -1,7 +1,7 @@
 var assert = require('assert');
 var UUID = require("../index");
 
-describe("v3 - name based with MD5", function () {
+describe("UUID.v3", function () {
 
     it("generates a v3 UUID (async)", function (done) {
         UUID.v3({

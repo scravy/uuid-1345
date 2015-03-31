@@ -1,7 +1,7 @@
 var assert = require('assert');
 var UUID = require("../index");
 
-describe("v5 - name based with SHA1", function () {
+describe("UUID.v5", function () {
 
     it("generates a v5 UUID (async)", function (done) {
         UUID.v5({

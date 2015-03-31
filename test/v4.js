@@ -1,7 +1,7 @@
 var assert = require('assert');
 var UUID = require("../index");
 
-describe("v4 - random", function () {
+describe("UUID.v4", function () {
 
     it("generates a v4 UUID (async)", function (done) {
         UUID.v4(function (err, result) {

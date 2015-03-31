@@ -123,7 +123,7 @@ You can specify a custom value for `clockSeq`.
 
 ### `UUID.v4([options], [callback])`
 
-Generates a random, version 4, UUID. Does not take any options.
+Generates a random, version 4, UUID. Does not take any special options.
 
 ---
 
