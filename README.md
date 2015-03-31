@@ -1,6 +1,8 @@
 uuid-1345
 ==========
 
+[![Build Status](https://travis-ci.org/scravy/uuid-1345.svg?branch=master)](https://travis-ci.org/scravy/uuid-1345)
+
 Generate UUIDs of versions 1, 3, 4, and 5.
 
     npm install --save uuid-1345
