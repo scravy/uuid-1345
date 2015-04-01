@@ -145,13 +145,13 @@ if (scenario instanceof Sync) {
         return sum;
     }
 
-    function min(arr) {
+    function minimum(arr) {
         var min = arr[0];
         arr.forEach(function (val) { min = Math.min(min, val); });
         return min;
     }
 
-    function max(arr) {
+    function maximum(arr) {
         var max = arr[0];
         arr.forEach(function (val) { max = Math.max(max, val); });
         return max;
@@ -161,12 +161,25 @@ if (scenario instanceof Sync) {
         async.waterfall(benchmarks, done);
     }, function () {
 
-        printf("%12s %8s %8s %8s", "BENCHMARK", "MEAN", "MIN", "MAX");
+        printf("%12s %8s %8s %8s\n", "BENCHMARK", "MEAN", "MIN", "MAX");
 
+        var means = [];
         Object.keys(results).forEach(function (name) {
             var values = results[name];
             var mean = sum(values) / values.length;
-            printf("%12s %8.2f %8.2f %8.2f", name, mean, min(values), max(values));
+            var min = minimum(values);
+            var max = maximum(values);
+            means.push(mean);
+            results[name] = { mean: mean, min: min, max: max };
+            printf("%12s %8.2f %8.2f %8.2f", name, mean, min, max);
         });
+        console.log("");
+        var best = minimum(means);
+        Object.keys(results).forEach(function (name) {
+            var r = results[name];
+            printf("%12s %8.2f %8.2f %8.2f", name,
+                r.mean / best, r.min / best, r.max / best);
+        });
+
     });
 }
