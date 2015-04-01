@@ -13,6 +13,23 @@ var offset = process.argv[5] || 500;
 
 var scenarios = {
 
+    'uuid-v4': function () {
+        var crypto = require('crypto');
+        var UUID = require('../index');
+
+        var random = crypto.randomBytes;
+        var stringify = UUID.stringify;
+
+        function uuidv4() {
+            var buffer = random(16);
+            buffer[6] = (buffer[6] & 0x0f) | 0x40;
+            buffer[8] = (buffer[8] & 0x3f) | 0x80;
+            return stringify(buffer);
+        }
+
+        return new Sync(uuidv4);
+    },
+
     'node-uuid-v1': function () {
         var uuid = require('node-uuid');
         return new Sync(uuid.v1);
