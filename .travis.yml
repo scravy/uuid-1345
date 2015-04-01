@@ -8,11 +8,9 @@ node_js:
   - iojs-v1.0.4
 before_install:
   - npm install -g gulp
-  - npm install -g mocha
 install:
   - npm install
-  - gulp
 script:
-  - mocha test
+  - gulp test
 after_script:
   - node benchmark
