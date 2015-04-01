@@ -14,4 +14,5 @@ install:
   - gulp
 script:
   - mocha test
-
+after_script:
+  - node benchmark
