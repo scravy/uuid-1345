@@ -182,7 +182,7 @@ if (scenario instanceof Sync) {
 
     async.timesSeries(parseInt(target) || 10, function (n, done) {
         shuffle(benchmarks);
-        async.series(benchmarks, done);
+        async.parallel(benchmarks, done);
     }, function () {
 
         printf("%12s %8s %8s %8s\n", "BENCHMARK", "MEAN", "MIN", "MAX");
