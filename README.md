@@ -3,7 +3,8 @@ uuid-1345
 
 [![Build Status](https://travis-ci.org/scravy/uuid-1345.svg?branch=master)](https://travis-ci.org/scravy/uuid-1345)
 
-Generate `v1`, `v3`, `v4`, and `v5` UUIDs, adhering to [RFC 4122](http://tools.ietf.org/html/rfc4122).
+Generate `v1`, `v3`, `v4`, and `v5` UUIDs, strictly conforming
+to [RFC 4122](http://tools.ietf.org/html/rfc4122).
 
     npm install --save uuid-1345
 
@@ -20,7 +21,7 @@ Features:
 
 Un-Features:
 
-+ Does not work in the browser due to the use of `crypto`.
++ Does not work in the browser due to the use of NodeJS's `crypto` module.
 
 Examples
 --------
@@ -142,12 +143,19 @@ You can specify a custom value for `clockSeq`.
 
 Generates a random version 4 UUID.
 
+This generator is backed by Node's `crypto.randomBytes` which is
+moderately slow (slower than `Math.random`) but has a higher
+quality (the generated UUIDs are less pseudo-random ;-).
+
 ---
 
 ### `UUID.v4fast()`
 
 Generated a pseudo-random version 4 UUID. Does not take any options.
 Does not offer an asynchronous interface.
+
+This generator is backed by `Math.random()`. It's really fast,
+but the generated UUIDs are only pseudo-random.
 
 ---
 
