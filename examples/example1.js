@@ -1,5 +1,7 @@
 var UUID = require('../index');
 
+console.log("Generated a fast v4 UUID:\n\t%s\n", UUID.v4fast());
+
 UUID.v4(function (err, result) {
     console.log("Generated a random UUID:\n\t%s\n", result);
 });
