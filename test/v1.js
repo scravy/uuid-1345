@@ -14,6 +14,28 @@ describe("UUID.v1", function () {
     it("generates a v1 UUID (sync)", function () {
         assert.equal(UUID.check(UUID.v1()).version, 1);
     });
+
+    it("generates a v1 UUID (buffer, async)", function (done) {
+        UUID.v1({ encoding: 'binary' }, function (err, result) {
+            assert.equal(UUID.check(result).version, 1);
+            done();
+        });
+    });
+
+    it("generates a v1 UUID (buffer, sync)", function () {
+        assert.equal(UUID.check(UUID.v1({ encoding: 'binary' })).version, 1);
+    });
+
+    it("generates a v1 UUID (object, async)", function (done) {
+        UUID.v1({ encoding: 'object' }, function (err, result) {
+            assert.equal(result.version, 1);
+            done();
+        });
+    });
+
+    it("generates a v1 UUID (object, sync)", function () {
+        assert.equal(UUID.v1({ encoding: 'object' }).version, 1);
+    });
  
     it("uses the MAC address", function (done) {
         macaddress.one(function (err, addr) {
