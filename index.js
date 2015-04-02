@@ -217,32 +217,37 @@ function uuidTimeBased(nodeId, options, callback) {
     buffer[8] = myClockSeq >>> 8;
     buffer[9] = myClockSeq & 0xff;
 
-    buffer[10] = nodeId[0];
-    buffer[11] = nodeId[1];
-    buffer[12] = nodeId[2];
-    buffer[13] = nodeId[3];
-    buffer[14] = nodeId[4];
-    buffer[15] = nodeId[5];
-
     var result;
     switch (options.encoding && options.encoding[0]) {
         case 'b':
         case 'B':
+            buffer[10] = nodeId[0];
+            buffer[11] = nodeId[1];
+            buffer[12] = nodeId[2];
+            buffer[13] = nodeId[3];
+            buffer[14] = nodeId[4];
+            buffer[15] = nodeId[5];
             result = buffer;
             break;
         case 'o':
         case 'U':
+            buffer[10] = nodeId[0];
+            buffer[11] = nodeId[1];
+            buffer[12] = nodeId[2];
+            buffer[13] = nodeId[3];
+            buffer[14] = nodeId[4];
+            buffer[15] = nodeId[5];
             result = new UUID(buffer);
             break;
         default:
-            result = byte2hex[buffer[0]]  + byte2hex[buffer[1]]  +
-                     byte2hex[buffer[2]]  + byte2hex[buffer[3]]  + '-' +
-                     byte2hex[buffer[4]]  + byte2hex[buffer[5]]  + '-' +
-                     byte2hex[buffer[6]]  + byte2hex[buffer[7]]  + '-' +
-                     byte2hex[buffer[8]]  + byte2hex[buffer[9]]  + '-' +
-                     byte2hex[buffer[10]] + byte2hex[buffer[11]] +
-                     byte2hex[buffer[12]] + byte2hex[buffer[13]] +
-                     byte2hex[buffer[14]] + byte2hex[buffer[15]];
+            result = byte2hex[buffer[0]] + byte2hex[buffer[1]] +
+                     byte2hex[buffer[2]] + byte2hex[buffer[3]] + '-' +
+                     byte2hex[buffer[4]] + byte2hex[buffer[5]] + '-' +
+                     byte2hex[buffer[6]] + byte2hex[buffer[7]] + '-' +
+                     byte2hex[buffer[8]] + byte2hex[buffer[9]] + '-' +
+                     byte2hex[nodeId[0]] + byte2hex[nodeId[1]] +
+                     byte2hex[nodeId[2]] + byte2hex[nodeId[3]] +
+                     byte2hex[nodeId[4]] + byte2hex[nodeId[5]];
             break;
     }
     if (callback) {

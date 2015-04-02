@@ -33,6 +33,7 @@
     "gulp-istanbul-enforcer": "^1.0.3",
     "gulp-jshint": "^1.9.4",
     "gulp-mocha": "^2.0.1",
+    "knuth-shuffle": "^1.0.1",
     "node-uuid": "^1.4.3"
   }
 }

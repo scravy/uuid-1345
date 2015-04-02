@@ -2,6 +2,7 @@ var child = require('child_process');
 var async = require('async');
 var sprintf = require('sprintf-js').sprintf;
 var printf = function () { console.log(sprintf.apply(null, arguments)); };
+var shuffle = require('knuth-shuffle').knuthShuffle;
 
 function sum(arr) {
     var acc = 0;
@@ -180,7 +181,8 @@ if (scenario instanceof Sync) {
     });
 
     async.timesSeries(parseInt(target) || 10, function (n, done) {
-        async.waterfall(benchmarks, done);
+        shuffle(benchmarks);
+        async.series(benchmarks, done);
     }, function () {
 
         printf("%12s %8s %8s %8s\n", "BENCHMARK", "MEAN", "MIN", "MAX");
