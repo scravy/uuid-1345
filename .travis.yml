@@ -13,4 +13,4 @@ install:
 script:
   - gulp test
 after_script:
-  - node benchmark
+  - node benchmark 10 100000 50 100
