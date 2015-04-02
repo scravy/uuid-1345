@@ -294,10 +294,14 @@ function uuidNamed(hashFunc, version, arg1, arg2) {
     switch (options.encoding && options.encoding[0]) {
         case 'b':
         case 'B':
+            buffer[6] = (buffer[6] & 0x0f) | version;
+            buffer[8] = (buffer[8] & 0x3f) | 0x80;
             result = buffer;
             break;
         case 'o':
         case 'U':
+            buffer[6] = (buffer[6] & 0x0f) | version;
+            buffer[8] = (buffer[8] & 0x3f) | 0x80;
             result = new UUID(buffer);
             break;
         default:
@@ -424,7 +428,7 @@ UUID.v1 = function v1(arg1, arg2) {
     var options = arg1 || {};
     var callback = typeof arg1 == 'function' ? arg1 : arg2;
 
-    var nodeId = (options.mac && parseMacAddress(options.mac)) || macAddress;
+    var nodeId = options.mac;
 
     if (nodeId === undefined) {
         if (!macAddressLoaded && callback) {
@@ -438,7 +442,7 @@ UUID.v1 = function v1(arg1, arg2) {
     if (nodeId === false) {
         return uuidTimeBased(randomHost, options, callback);
     }
-    return uuidTimeBased(nodeId, options, callback);
+    return uuidTimeBased(parseMacAddress(nodeId), options, callback);
 };
 
 UUID.v4 = uuidRandom;

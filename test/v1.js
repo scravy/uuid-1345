@@ -50,4 +50,17 @@ describe("UUID.v1", function () {
             done();
         });
     });
+    
+    it("uses the randomized node when { mac: false }", function (done) {
+        macaddress.one(function (err, addr) {
+            assert(addr.replace(/:/g, "") != UUID.v1({ mac: false }).substring(24));
+            done();
+        });
+    });
+
+    it("shows UUID in .inspect() (for nodes console.log)", function () {
+        var uuid = UUID.v1({ encoding: 'object' });
+        assert(uuid.inspect().indexOf(uuid.toString()) >= 0);
+    });
+
 });

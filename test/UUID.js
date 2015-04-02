@@ -17,6 +17,26 @@ describe('UUID class', function () {
 
         assert(uuid instanceof UUID);
     });
+
+    it('throws on illegal string', function () {
+        assert.throws(function () {
+            new UUID("oisjgor");
+        });
+    });
+
+    it('throws on illegal buffer', function () {
+        assert.throws(function () {
+            new UUID(new Buffer(10));
+        });
+    });
+
+    it('correctly identifies binary nil UUID', function () {
+        var nil = new Buffer(16);
+        for (var i = 0; i < 16; i++) {
+            nil[i] = 0;
+        }
+        assert.equal(new UUID(nil).variant, 'nil');
+    });
 });
 
 describe('UUID.prototype.toString()', function () {
