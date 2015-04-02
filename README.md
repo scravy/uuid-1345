@@ -14,6 +14,9 @@ Features:
 + Returns `string` or `Buffer`, as you wish
 + Works in NodeJS + io.js (see build status above)
 + Allows you to inspect uuids (check the `check` function)
++ It's really fast (see [here](https://travis-ci.org/scravy/uuid-1345/jobs/56819874#L312),
+  [here](https://travis-ci.org/scravy/uuid-1345/jobs/56819875#L312),
+  and [here](https://travis-ci.org/scravy/uuid-1345/jobs/56819876#L312))
 
 Un-Features:
 
