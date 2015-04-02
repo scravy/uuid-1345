@@ -363,31 +363,27 @@ function uuidRandom(arg1, arg2) {
 // v4 fast
 function uuidRandomFast() {
 
-    var buffer = new Buffer(16);
+    var r1 = Math.random() * 0x100000000;
+    var r2 = Math.random() * 0x100000000;
+    var r3 = Math.random() * 0x100000000;
+    var r4 = Math.random() * 0x100000000;
 
-    for (var i = 0, r; i < 16; i++) {
-        if ((i & 0x03) === 0) {
-            r = Math.random() * 0x100000000;
-        }
-        buffer[i] = r >>> ((i & 0x03) << 3) & 0xff;
-    }
-
-    return byte2hex[buffer[0]] + 
-           byte2hex[buffer[1]] +
-           byte2hex[buffer[2]] +
-           byte2hex[buffer[3]] + '-' +
-           byte2hex[buffer[4]] +
-           byte2hex[buffer[5]] + '-' +
-           byte2hex[(buffer[6] & 0x0f) | 0x40] +
-           byte2hex[buffer[7]] + '-' +
-           byte2hex[(buffer[8] & 0x3f) | 0x80] +
-           byte2hex[buffer[9]] + '-' +
-           byte2hex[buffer[10]] +
-           byte2hex[buffer[11]] +
-           byte2hex[buffer[12]] +
-           byte2hex[buffer[13]] +
-           byte2hex[buffer[14]] +
-           byte2hex[buffer[15]];
+    return byte2hex[ r1        & 0xff] + 
+           byte2hex[ r1 >>>  8 & 0xff] +
+           byte2hex[ r1 >>> 16 & 0xff] +
+           byte2hex[ r1 >>> 24 & 0xff] + '-' +
+           byte2hex[ r2 & 0xff] +
+           byte2hex[ r2 >>>  8 & 0xff] + '-' +
+           byte2hex[(r2 >>> 16 & 0x0f) | 0x40] +
+           byte2hex[ r2 >>> 24 & 0xff] + '-' +
+           byte2hex[(r3 & 0x3f) | 0x80] +
+           byte2hex[ r3 >>>  8 & 0xff] + '-' +
+           byte2hex[ r3 >>> 16 & 0xff] +
+           byte2hex[ r3 >>> 24 & 0xff] +
+           byte2hex[ r4        & 0xff] +
+           byte2hex[ r4 >>>  8 & 0xff] +
+           byte2hex[ r4 >>> 16 & 0xff] +
+           byte2hex[ r1 >>> 24 & 0xff];
 }
 
 function stringify(buffer) {
