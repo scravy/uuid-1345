@@ -17,19 +17,18 @@ var jshint = require('gulp-jshint'),
 
 var sourceFiles = [ '*.js', 'lib/*.js', 'test/*.js' ];
 
-gulp.task('lint', function (done) {
-  gulp.src([ 'index.js', 'test/*.js', 'benchmark/*.js' ])
-      .pipe(jshint())
-      .pipe(jshint.reporter('default'))
-      .on('end', done);
+gulp.task('lint', function () {
+  return gulp.src([ 'index.js', 'test/*.js', 'benchmark/*.js' ])
+             .pipe(jshint())
+             .pipe(jshint.reporter('default'))
 });
 
 gulp.task('test', [ 'lint' ], function (done) {
-  gulp.src(sourceFiles)
+  gulp.src('index.js')
       .pipe(istanbul())
       .pipe(istanbul.hookRequire()) 
       .on('finish', function () {
-        gulp.src([ 'test/*.js' ])
+        gulp.src('test/*.js')
             .pipe(mocha())
             .pipe(istanbul.writeReports())
             .pipe(enforcer({
@@ -38,7 +37,7 @@ gulp.task('test', [ 'lint' ], function (done) {
               rootDirectory: ''
             }))
             .on('end', done);
-      });
+    });
 });
 
 gulp.task('default', [ 'test' ]);
