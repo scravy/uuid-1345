@@ -94,6 +94,14 @@ UUID.prototype.inspect = function () {
     return "UUID v" + this.version + " " + this.toString();
 };
 
+function error(message, callback) {
+    if (callback) {
+        callback(message, null);
+    } else {
+        throw new Error(message);
+    }
+}
+
 // read stringified uuid into a Buffer
 function parse(string) {
     
@@ -258,18 +266,18 @@ function uuidNamed(hashFunc, version, arg1, arg2) {
 
     if (typeof namespace === 'string') {
         if (!check(namespace)) {
-            return invalidNamespace;
+            return error(invalidNamespace, callback);
         }
         namespace = parse(namespace);
     } else if (namespace instanceof UUID) {
         namespace = namespace.toBuffer();
     } else if (!(namespace instanceof Buffer) || namespace.length !== 16) {
-        return invalidNamespace;
+        return error(invalidNamespace, callback);
     }
 
     var nameIsNotAString = typeof name !== 'string';
     if (nameIsNotAString && !(name instanceof Buffer)) {
-        return invalidName;
+        return error(invalidName, callback);
     }
 
     hash.update(namespace);
@@ -404,7 +412,6 @@ UUID.v1 = function v1(arg1, arg2) {
 UUID.v4 = uuidRandom;
 
 UUID.v3 = function (options, callback) {
-    console.log(callback);
     return uuidNamed('md5', 0x30, options, callback);
 };
 
