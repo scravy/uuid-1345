@@ -5,7 +5,11 @@
   "keywords": [
     "uuid",
     "guid",
-    "rfc4122"
+    "rfc4122",
+    "uuid-v1",
+    "uuid-v3",
+    "uuid-v4",
+    "uuid-v5"
   ],
   "main": "index.js",
   "scripts": {
