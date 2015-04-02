@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/scravy/uuid-1345",
   "dependencies": {
-    "node-macaddress": "^0.1.2",
+    "node-macaddress": "^0.2.0",
     "sprintf-js": "^1.0.2"
   },
   "devDependencies": {
