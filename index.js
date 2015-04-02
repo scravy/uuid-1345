@@ -343,8 +343,10 @@ function uuidRandom(arg1, arg2) {
             result = byte2hex[buffer[0]]  + byte2hex[buffer[1]]  +
                      byte2hex[buffer[2]]  + byte2hex[buffer[3]]  + '-' +
                      byte2hex[buffer[4]]  + byte2hex[buffer[5]]  + '-' +
-                     byte2hex[buffer[6]]  + byte2hex[buffer[7]]  + '-' +
-                     byte2hex[buffer[8]]  + byte2hex[buffer[9]]  + '-' +
+                     byte2hex[(buffer[6] & 0x0f) | 0x40] +
+                     byte2hex[buffer[7]]  + '-' +
+                     byte2hex[(buffer[8] & 0x3f) | 0x80] +
+                     byte2hex[buffer[9]]  + '-' +
                      byte2hex[buffer[10]] + byte2hex[buffer[11]] +
                      byte2hex[buffer[12]] + byte2hex[buffer[13]] +
                      byte2hex[buffer[14]] + byte2hex[buffer[15]];
