@@ -2,12 +2,18 @@
 /* jshint node: true */
 "use strict";
 
-var gulp = require('gulp');
+var thresholds = {
+  statements: 60,
+    branches: 60,
+       lines: 60,
+   functions: 60
+};
 
-var jshint = require('gulp-jshint');
-var mocha = require('gulp-mocha');
-var istanbul = require('gulp-istanbul');
-var enforcer = require('gulp-istanbul-enforcer');
+var jshint = require('gulp-jshint'),
+     mocha = require('gulp-mocha'),
+  istanbul = require('gulp-istanbul'),
+  enforcer = require('gulp-istanbul-enforcer'),
+      gulp = require('gulp');
 
 var sourceFiles = [ '*.js', 'lib/*.js', 'test/*.js' ];
 
@@ -27,12 +33,7 @@ gulp.task('test', function (done) {
             .pipe(mocha())
             .pipe(istanbul.writeReports())
             .pipe(enforcer({
-              thresholds: {
-                statements: 60,
-                branches: 60,
-                lines: 60,
-                functions: 60
-              },
+              thresholds: thresholds,
               coverageDirectory: 'coverage',
               rootDirectory: ''
             }))

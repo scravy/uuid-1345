@@ -28,19 +28,4 @@ describe("UUID.v1", function () {
             done();
         });
     });
-
-    it("respects `case: upper` option", function (done) {
-        UUID.v1({ case: 'upper' }, function (err, result) {
-            assert.equal(result.toUpperCase(), result);
-            done();
-        });
-    });
-
-    it("respects `case: lower` option", function (done) {
-        UUID.v1({ case: 'lower' }, function (err, result) {
-            assert.equal(result.toLowerCase(), result);
-            done();
-        });
-    });
-
 });

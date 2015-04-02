@@ -1,11 +1,66 @@
-(function () { "use strict";
-
 var sprintf = require('sprintf-js').sprintf;
 var crypto = require('crypto');
-var v1 = require('./lib/v1');
-var v3 = require('./lib/named')('md5');
-//var v4 = require('./lib/v4');
-var v5 = require('./lib/named')('sha1');
+
+// error codes
+var invalidNamespace =
+  'options.namespace must be a string or a Buffer ' +
+  'containing a valid UUID, or a UUID object';
+
+var invalidName =
+  'options.name must be either a string or a Buffer';
+
+var invalidMacAddress =
+  "invalid options.mac - must either not be set, the value `false`, " +
+  "a Buffer of length 6, or a MAC address as a string";
+
+var moreThan10000 =
+  "can not generate more than 10000 UUIDs per second";
+
+// Node ID according to rfc4122#section-4.5
+var randomHost = crypto.randomBytes(16);
+randomHost[0] = randomHost[0] | 0x01;
+
+// randomize clockSeq initially, as per rfc4122#section-4.1.5
+var seed = crypto.randomBytes(2);
+var clockSeq = (seed[0] | (seed[1] << 8)) & 0x3fff;
+
+// clock values
+var lastMTime = 0;
+var lastNTime = 0;
+
+// lookup table hex to byte
+var hex2byte = {};
+
+// lookup table byte to hex
+var byte2hex = [];
+
+// populate lookup tables
+for (var i = 0; i < 256; i++) {
+    hex2byte[sprintf('%02x', i).toLowerCase()] = i;
+    byte2hex[i] = sprintf('%02x', i).toLowerCase();
+}
+
+function parseMacAddress(address) {
+    var buffer = new Buffer(6);
+    buffer[0] = hex2byte[address[0] + address[1]];
+    buffer[1] = hex2byte[address[3] + address[4]];
+    buffer[2] = hex2byte[address[6] + address[7]];
+    buffer[3] = hex2byte[address[9] + address[10]];
+    buffer[4] = hex2byte[address[12] + address[13]];
+    buffer[5] = hex2byte[address[15] + address[16]];
+    return buffer;
+}
+
+// MAC address for v1 uuids
+var macAddress = randomHost;
+var macAddressLoaded = false;
+
+require('node-macaddress').one(function (err, result) {
+    if (!err) {
+        macAddress = parseMacAddress(result);
+    }
+    macAddressLoaded = true;
+});
 
 // UUID class
 var UUID = function (uuid) {
@@ -39,36 +94,8 @@ UUID.prototype.inspect = function () {
     return "UUID v" + this.version + " " + this.toString();
 };
 
-var hex2byte = {}; // lookup table hex to byte
-(function () {
-    for (var i = 0; i < 256; i++) {
-        hex2byte[sprintf('%02x', i)] = i;
-    }
-}());
-
-var byte2hex = []; // lookup table byte to hex
-(function () {
-    for (var i = 0; i < 256; i++) {
-        byte2hex[i] = sprintf('%02x', i);
-    }
-}());
-
-// format Buffer as string "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-function uuidToString(b) {
-    var i = 0;
-    return byte2hex[b[i++]] + byte2hex[b[i++]] +
-           byte2hex[b[i++]] + byte2hex[b[i++]] + '-' +
-           byte2hex[b[i++]] + byte2hex[b[i++]] + '-' +
-           byte2hex[b[i++]] + byte2hex[b[i++]] + '-' +
-           byte2hex[b[i++]] + byte2hex[b[i++]] + '-' +
-           byte2hex[b[i++]] + byte2hex[b[i++]] +
-           byte2hex[b[i++]] + byte2hex[b[i++]] +
-           byte2hex[b[i++]] + byte2hex[b[i++]];
-}
-UUID.stringify = uuidToString;
-
 // read stringified uuid into a Buffer
-function parseUUID(string) {
+function parse(string) {
     
     var buffer = new Buffer(16);
     var j = 0;
@@ -81,72 +108,9 @@ function parseUUID(string) {
 
     return buffer;
 }
-UUID.parse = parseUUID;
 
-function wrap(func, version) {
-
-    func = func.bind(UUID);
-
-    function handleResult(options, buffer) {
-
-        // set version
-        buffer[6] = (buffer[6] & 0x0f) | version;
-
-        // set variant
-        buffer[8] = (buffer[8] & 0x3f) | 0x80;
-
-        switch (options.encoding) {
-            case 'binary':
-                return buffer;
-            case 'object':
-                return new UUID(buffer);
-        }
-
-        // turn buffer into string
-        var uuid = uuidToString(buffer);
-        
-        if (options.case == 'upper') {
-            uuid = uuid.toUpperCase();
-        }
-
-        return uuid;
-    }
-
-    return function (options, callback) {
-
-        switch (typeof options) {
-            case 'function':
-                callback = options;
-                break;
-            case 'string':
-                options = { name: options };
-                break;
-            case 'object':
-                break;
-            default:
-                options = {};
-        }
-
-        if ((options.sync = typeof callback !== 'function')) {
-            var result = func(options);
-            if (typeof result === 'string') {
-                throw new Error(result);
-            }
-            return handleResult(options, result);
-        } else {
-            setImmediate(function () {
-                var result = func(options);
-                if (typeof result === 'string') {
-                    return callback(result);
-                }
-                callback(null, handleResult(options, result));
-            });
-        }
-    };
-}
-
+// according to rfc4122#section-4.1.1
 function getVariant(bits) {
-    // according to rfc4122#section-4.1.1
     switch (bits) {
         case 0: case 1: case 3:
             return 'ncs';
@@ -159,7 +123,7 @@ function getVariant(bits) {
     }
 }
 
-UUID.check = function (uuid, offset) {
+function check(uuid, offset) {
 
     if (typeof uuid === 'string') {
         uuid = uuid.toLowerCase();
@@ -195,7 +159,6 @@ UUID.check = function (uuid, offset) {
             return { version: undefined, variant: 'nil', format: 'binary' };
         }
 
-        
         return {
             version: (uuid[offset + 6] & 0xf0) >> 4,
             variant: getVariant((uuid[offset + 8] & 0xe0) >> 5),
@@ -203,6 +166,207 @@ UUID.check = function (uuid, offset) {
         };
     }
 };
+
+// v1
+function uuidTimeBased(nodeId, options, callback) {
+
+    var mTime = Date.now();
+    var nTime = lastNTime + 1;
+    var delta = (mTime - lastMTime) + (nTime - lastNTime) / 10000;
+
+    if (delta < 0) {
+        clockSeq = (clockSeq + 1) & 0x3fff;
+        nTime = 0;
+    } else if (mTime > lastMTime) {
+        nTime = 0;
+    } else if (nTime >= 10000) {
+        return moreThan10000;
+    }
+
+    lastMTime = mTime;
+    lastNTime = nTime;
+
+    // unix timestamp to gregorian epoch as per rfc4122#section-4.5
+    mTime += 12219292800000;
+
+    var buffer = new Buffer(16);
+    var myClockSeq = options.clockSeq === undefined ?
+            clockSeq : (options.clockSeq & 0x3fff);
+    var timeLow = ((mTime & 0xfffffff) * 10000 + nTime) % 0x100000000;
+    var timeHigh = (mTime / 0x100000000 * 10000) & 0xfffffff;
+
+    buffer[0] = timeLow >>> 24 & 0xff;
+    buffer[1] = timeLow >>> 16 & 0xff;
+    buffer[2] = timeLow >>> 8 & 0xff;
+    buffer[3] = timeLow & 0xff;
+
+    buffer[4] = timeHigh >>> 8 & 0xff;
+    buffer[5] = timeHigh & 0xff;
+
+    buffer[6] = (timeHigh >>> 24 & 0x0f) | 0x10;
+    buffer[7] = (timeHigh >>> 16 & 0x3f) | 0x80;
+
+    buffer[8] = myClockSeq >>> 8;
+    buffer[9] = myClockSeq & 0xff;
+
+    buffer[10] = nodeId[0];
+    buffer[11] = nodeId[1];
+    buffer[12] = nodeId[2];
+    buffer[13] = nodeId[3];
+    buffer[14] = nodeId[4];
+    buffer[15] = nodeId[5];
+
+    var result;
+    switch (options.encoding && options.encoding[0]) {
+        case 'b':
+        case 'B':
+            result = buffer;
+            break;
+        case 'o':
+        case 'U':
+            result = new UUID(buffer);
+            break;
+        default:
+            result = byte2hex[buffer[0]]  + byte2hex[buffer[1]]  +
+                     byte2hex[buffer[2]]  + byte2hex[buffer[3]]  + '-' +
+                     byte2hex[buffer[4]]  + byte2hex[buffer[5]]  + '-' +
+                     byte2hex[buffer[6]]  + byte2hex[buffer[7]]  + '-' +
+                     byte2hex[buffer[8]]  + byte2hex[buffer[9]]  + '-' +
+                     byte2hex[buffer[10]] + byte2hex[buffer[11]] +
+                     byte2hex[buffer[12]] + byte2hex[buffer[13]] +
+                     byte2hex[buffer[14]] + byte2hex[buffer[15]];
+            break;
+    }
+    if (callback) {
+        setImmediate(function () {
+            callback(null, result);
+        });
+    }
+    return result;
+}
+
+// v3 + v5
+function uuidNamed(hashFunc, version, arg1, arg2) {
+
+    var options = arg1 || {};
+    var callback = typeof arg1 === 'function' ? arg1 : arg2;
+
+    var namespace = options.namespace;
+    var name = options.name;
+
+    var hash = crypto.createHash(hashFunc);
+
+    if (typeof namespace === 'string') {
+        if (!check(namespace)) {
+            return invalidNamespace;
+        }
+        namespace = parse(namespace);
+    } else if (namespace instanceof UUID) {
+        namespace = namespace.toBuffer();
+    } else if (!(namespace instanceof Buffer) || namespace.length !== 16) {
+        return invalidNamespace;
+    }
+
+    var nameIsNotAString = typeof name !== 'string';
+    if (nameIsNotAString && !(name instanceof Buffer)) {
+        return invalidName;
+    }
+
+    hash.update(namespace);
+    hash.update(options.name, nameIsNotAString ? 'binary' : 'utf8');
+
+    var buffer = hash.digest();
+
+    buffer[6] = (buffer[6] & 0x0f) | version;
+    buffer[8] = (buffer[8] & 0x3f) | 0x80;
+
+    var result;
+    switch (options.encoding && options.encoding[0]) {
+        case 'b':
+        case 'B':
+            result = buffer;
+            break;
+        case 'o':
+        case 'U':
+            result = new UUID(buffer);
+            break;
+        default:
+            result = byte2hex[buffer[0]]  + byte2hex[buffer[1]]  +
+                     byte2hex[buffer[2]]  + byte2hex[buffer[3]]  + '-' +
+                     byte2hex[buffer[4]]  + byte2hex[buffer[5]]  + '-' +
+                     byte2hex[buffer[6]]  + byte2hex[buffer[7]]  + '-' +
+                     byte2hex[buffer[8]]  + byte2hex[buffer[9]]  + '-' +
+                     byte2hex[buffer[10]] + byte2hex[buffer[11]] +
+                     byte2hex[buffer[12]] + byte2hex[buffer[13]] +
+                     byte2hex[buffer[14]] + byte2hex[buffer[15]];
+            break;
+    }
+    if (callback) {
+        setImmediate(function () {
+            callback(null, result);
+        });
+    } else {
+        return result;
+    }
+};
+
+// v4
+function uuidRandom(arg1, arg2) {
+
+    var options = arg1 || {};
+    var callback = typeof arg1 === 'function' ? arg1 : arg2;
+
+    var buffer = crypto.randomBytes(16);
+
+    buffer[6] = (buffer[6] & 0x0f) | 0x40;
+    buffer[8] = (buffer[8] & 0x3f) | 0x80;
+
+    var result;
+    switch (options.encoding && options.encoding[0]) {
+        case 'b':
+        case 'B':
+            result = buffer;
+            break;
+        case 'o':
+        case 'U':
+            result = new UUID(buffer);
+            break;
+        default:
+            result = byte2hex[buffer[0]]  + byte2hex[buffer[1]]  +
+                     byte2hex[buffer[2]]  + byte2hex[buffer[3]]  + '-' +
+                     byte2hex[buffer[4]]  + byte2hex[buffer[5]]  + '-' +
+                     byte2hex[buffer[6]]  + byte2hex[buffer[7]]  + '-' +
+                     byte2hex[buffer[8]]  + byte2hex[buffer[9]]  + '-' +
+                     byte2hex[buffer[10]] + byte2hex[buffer[11]] +
+                     byte2hex[buffer[12]] + byte2hex[buffer[13]] +
+                     byte2hex[buffer[14]] + byte2hex[buffer[15]];
+            break;
+    }
+    if (callback) {
+        setImmediate(function () {
+            callback(null, result);
+        });
+    } else {
+        return result;
+    }
+}
+
+function stringify(buffer) {
+    return byte2hex[buffer[0]]  + byte2hex[buffer[1]]  +
+         byte2hex[buffer[2]]  + byte2hex[buffer[3]]  + '-' +
+         byte2hex[buffer[4]]  + byte2hex[buffer[5]]  + '-' +
+         byte2hex[buffer[6]]  + byte2hex[buffer[7]]  + '-' +
+         byte2hex[buffer[8]]  + byte2hex[buffer[9]]  + '-' +
+         byte2hex[buffer[10]] + byte2hex[buffer[11]] +
+         byte2hex[buffer[12]] + byte2hex[buffer[13]] +
+         byte2hex[buffer[14]] + byte2hex[buffer[15]];
+};
+
+UUID.stringify = stringify;
+
+UUID.parse = parse;
+
+UUID.check = check;
 
 // according to rfc4122#section-4.1.7
 UUID.nil = new UUID("00000000-0000-0000-0000-000000000000");
@@ -215,14 +379,37 @@ UUID.namespace = {
     x500: new UUID("6ba7b814-9dad-11d1-80b4-00c04fd430c8")
 };
 
-UUID.v1 = wrap(v1, 0x10);
+UUID.v1 = function v1(arg1, arg2) {
 
-UUID.v3 = wrap(v3, 0x30);
+    var options = arg1 || {};
+    var callback = typeof arg1 == 'function' ? arg1 : arg2;
 
-UUID.v4 = wrap(function () { return crypto.randomBytes(16); }, 0x40);
+    var nodeId = (options.mac && parseMacAddress(options.mac)) || macAddress;
 
-UUID.v5 = wrap(v5, 0x50);
+    if (nodeId === undefined) {
+        if (!macAddressLoaded && callback) {
+            setImmediate(function () {
+                UUID.v1(options, callback);
+            });
+            return;
+        }
+        return uuidTimeBased(macAddress, options, callback);
+    }
+    if (nodeId === false) {
+        return uuidTimeBased(randomHost, options, callback);
+    }
+    return uuidTimeBased(nodeId, options, callback);
+};
+
+UUID.v4 = uuidRandom;
+
+UUID.v3 = function (options, callback) {
+    console.log(callback);
+    return uuidNamed('md5', 0x30, options, callback);
+};
+
+UUID.v5 = function (options, callback) {
+    return uuidNamed('sha1', 0x50, options, callback);
+};
 
 module.exports = UUID;
-
-}());

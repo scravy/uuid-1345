@@ -9,7 +9,7 @@
   ],
   "main": "index.js",
   "scripts": {
-    "build": "gulp",
+    "prepublish": "gulp preprocess",
     "test": "gulp test"
   },
   "author": "Julian Fleischer",
@@ -34,6 +34,7 @@
     "gulp-jshint": "^1.9.4",
     "gulp-mocha": "^2.0.1",
     "gulp-preprocess": "^1.2.0",
+    "gulp-rename": "^1.2.0",
     "knuth-shuffle": "^1.0.1",
     "node-uuid": "^1.4.3"
   }
