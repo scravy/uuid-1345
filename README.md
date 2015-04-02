@@ -94,11 +94,6 @@ where `vX` is one of `v1`, `v3`, `v4`, or `v5`.
 
 `options` that are recognized by every generator are:
 
-**`case: 'lower' | 'upper'`**
-
-By default the generated UUIDs are lowercase.
-You can change this to uppercase by specifying `upper`.
-
 **`encoding: 'ascii' | 'binary' | 'object'`**
 
 By default the generated UUIDs are ASCII strings.
