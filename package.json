@@ -9,7 +9,7 @@
   ],
   "main": "index.js",
   "scripts": {
-    "prepublish": "gulp preprocess",
+    "prepublish": "gulp test",
     "test": "gulp test"
   },
   "author": "Julian Fleischer",

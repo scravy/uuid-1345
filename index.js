@@ -165,7 +165,7 @@ function check(uuid, offset) {
             format: 'binary'
         };
     }
-};
+}
 
 // v1
 function uuidTimeBased(nodeId, options, callback) {
@@ -308,7 +308,7 @@ function uuidNamed(hashFunc, version, arg1, arg2) {
     } else {
         return result;
     }
-};
+}
 
 // v4
 function uuidRandom(arg1, arg2) {
@@ -360,7 +360,7 @@ function stringify(buffer) {
          byte2hex[buffer[10]] + byte2hex[buffer[11]] +
          byte2hex[buffer[12]] + byte2hex[buffer[13]] +
          byte2hex[buffer[14]] + byte2hex[buffer[15]];
-};
+}
 
 UUID.stringify = stringify;
 

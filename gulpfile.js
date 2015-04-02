@@ -18,13 +18,13 @@ var jshint = require('gulp-jshint'),
 var sourceFiles = [ '*.js', 'lib/*.js', 'test/*.js' ];
 
 gulp.task('lint', function (done) {
-  gulp.src(sourceFiles)
+  gulp.src([ 'index.js', 'test/*.js', 'benchmark/*.js' ])
       .pipe(jshint())
       .pipe(jshint.reporter('default'))
       .on('end', done);
 });
 
-gulp.task('test', function (done) {
+gulp.task('test', [ 'lint' ], function (done) {
   gulp.src(sourceFiles)
       .pipe(istanbul())
       .pipe(istanbul.hookRequire()) 
@@ -41,4 +41,4 @@ gulp.task('test', function (done) {
       });
 });
 
-gulp.task('default', [ 'lint', 'test' ]);
+gulp.task('default', [ 'test' ]);

@@ -3,6 +3,24 @@ var async = require('async');
 var sprintf = require('sprintf-js').sprintf;
 var printf = function () { console.log(sprintf.apply(null, arguments)); };
 
+function sum(arr) {
+    var acc = 0;
+    arr.forEach(function (val) { acc += val; });
+    return acc;
+}
+
+function minimum(arr) {
+    var min = arr[0];
+    arr.forEach(function (val) { min = Math.min(min, val); });
+    return min;
+}
+
+function maximum(arr) {
+    var max = arr[0];
+    arr.forEach(function (val) { max = Math.max(max, val); });
+    return max;
+}
+
 function Sync(func) { this.func = func; }
 function Async(func) { this.func = func; }
 
@@ -155,24 +173,6 @@ if (scenario instanceof Sync) {
             });
         });
     });
-
-    function sum(arr) {
-        var sum = 0;
-        arr.forEach(function (val) { sum += val; });
-        return sum;
-    }
-
-    function minimum(arr) {
-        var min = arr[0];
-        arr.forEach(function (val) { min = Math.min(min, val); });
-        return min;
-    }
-
-    function maximum(arr) {
-        var max = arr[0];
-        arr.forEach(function (val) { max = Math.max(max, val); });
-        return max;
-    }
 
     async.timesSeries(parseInt(target) || 10, function (n, done) {
         async.waterfall(benchmarks, done);
