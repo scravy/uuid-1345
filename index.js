@@ -285,9 +285,6 @@ function uuidNamed(hashFunc, version, arg1, arg2) {
 
     var buffer = hash.digest();
 
-    buffer[6] = (buffer[6] & 0x0f) | version;
-    buffer[8] = (buffer[8] & 0x3f) | 0x80;
-
     var result;
     switch (options.encoding && options.encoding[0]) {
         case 'b':
@@ -299,11 +296,13 @@ function uuidNamed(hashFunc, version, arg1, arg2) {
             result = new UUID(buffer);
             break;
         default:
-            result = byte2hex[buffer[0]]  + byte2hex[buffer[1]]  +
-                     byte2hex[buffer[2]]  + byte2hex[buffer[3]]  + '-' +
-                     byte2hex[buffer[4]]  + byte2hex[buffer[5]]  + '-' +
-                     byte2hex[buffer[6]]  + byte2hex[buffer[7]]  + '-' +
-                     byte2hex[buffer[8]]  + byte2hex[buffer[9]]  + '-' +
+            result = byte2hex[buffer[0]] + byte2hex[buffer[1]] +
+                     byte2hex[buffer[2]] + byte2hex[buffer[3]] + '-' +
+                     byte2hex[buffer[4]] + byte2hex[buffer[5]] + '-' +
+                     byte2hex[(buffer[6] & 0x0f) | version] +
+                     byte2hex[buffer[7]] + '-' +
+                     byte2hex[(buffer[8] & 0x3f) | 0x80] +
+                     byte2hex[buffer[9]] + '-' +
                      byte2hex[buffer[10]] + byte2hex[buffer[11]] +
                      byte2hex[buffer[12]] + byte2hex[buffer[13]] +
                      byte2hex[buffer[14]] + byte2hex[buffer[15]];
@@ -340,13 +339,13 @@ function uuidRandom(arg1, arg2) {
             result = new UUID(buffer);
             break;
         default:
-            result = byte2hex[buffer[0]]  + byte2hex[buffer[1]]  +
-                     byte2hex[buffer[2]]  + byte2hex[buffer[3]]  + '-' +
-                     byte2hex[buffer[4]]  + byte2hex[buffer[5]]  + '-' +
+            result = byte2hex[buffer[0]] + byte2hex[buffer[1]] +
+                     byte2hex[buffer[2]] + byte2hex[buffer[3]] + '-' +
+                     byte2hex[buffer[4]] + byte2hex[buffer[5]] + '-' +
                      byte2hex[(buffer[6] & 0x0f) | 0x40] +
-                     byte2hex[buffer[7]]  + '-' +
+                     byte2hex[buffer[7]] + '-' +
                      byte2hex[(buffer[8] & 0x3f) | 0x80] +
-                     byte2hex[buffer[9]]  + '-' +
+                     byte2hex[buffer[9]] + '-' +
                      byte2hex[buffer[10]] + byte2hex[buffer[11]] +
                      byte2hex[buffer[12]] + byte2hex[buffer[13]] +
                      byte2hex[buffer[14]] + byte2hex[buffer[15]];
@@ -361,15 +360,45 @@ function uuidRandom(arg1, arg2) {
     }
 }
 
+// v4 fast
+function uuidRandomFast() {
+
+    var buffer = new Buffer(16);
+
+    for (var i = 0, r; i < 16; i++) {
+        if ((i & 0x03) === 0) {
+            r = Math.random() * 0x100000000;
+        }
+        buffer[i] = r >>> ((i & 0x03) << 3) & 0xff;
+    }
+
+    return byte2hex[buffer[0]] + 
+           byte2hex[buffer[1]] +
+           byte2hex[buffer[2]] +
+           byte2hex[buffer[3]] + '-' +
+           byte2hex[buffer[4]] +
+           byte2hex[buffer[5]] + '-' +
+           byte2hex[(buffer[6] & 0x0f) | 0x40] +
+           byte2hex[buffer[7]] + '-' +
+           byte2hex[(buffer[8] & 0x3f) | 0x80] +
+           byte2hex[buffer[9]] + '-' +
+           byte2hex[buffer[10]] +
+           byte2hex[buffer[11]] +
+           byte2hex[buffer[12]] +
+           byte2hex[buffer[13]] +
+           byte2hex[buffer[14]] +
+           byte2hex[buffer[15]];
+}
+
 function stringify(buffer) {
     return byte2hex[buffer[0]]  + byte2hex[buffer[1]]  +
-         byte2hex[buffer[2]]  + byte2hex[buffer[3]]  + '-' +
-         byte2hex[buffer[4]]  + byte2hex[buffer[5]]  + '-' +
-         byte2hex[buffer[6]]  + byte2hex[buffer[7]]  + '-' +
-         byte2hex[buffer[8]]  + byte2hex[buffer[9]]  + '-' +
-         byte2hex[buffer[10]] + byte2hex[buffer[11]] +
-         byte2hex[buffer[12]] + byte2hex[buffer[13]] +
-         byte2hex[buffer[14]] + byte2hex[buffer[15]];
+           byte2hex[buffer[2]]  + byte2hex[buffer[3]]  + '-' +
+           byte2hex[buffer[4]]  + byte2hex[buffer[5]]  + '-' +
+           byte2hex[buffer[6]]  + byte2hex[buffer[7]]  + '-' +
+           byte2hex[buffer[8]]  + byte2hex[buffer[9]]  + '-' +
+           byte2hex[buffer[10]] + byte2hex[buffer[11]] +
+           byte2hex[buffer[12]] + byte2hex[buffer[13]] +
+           byte2hex[buffer[14]] + byte2hex[buffer[15]];
 }
 
 UUID.stringify = stringify;
@@ -412,6 +441,8 @@ UUID.v1 = function v1(arg1, arg2) {
 };
 
 UUID.v4 = uuidRandom;
+
+UUID.v4fast = uuidRandomFast;
 
 UUID.v3 = function (options, callback) {
     return uuidNamed('md5', 0x30, options, callback);

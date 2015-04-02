@@ -12,9 +12,17 @@ describe("UUID.v4", function () {
     });
 
     it("generates a v4 UUID (sync)", function () {
-        assert.equal(UUID.check(UUID.v4()).version, 4);
+        var uuid = UUID.v4();
+        assert.equal(UUID.check(uuid).version, 4);
+        assert.equal(UUID.check(uuid).variant, 'rfc4122');
+
     });
 
+    it("generates a v4 UUID (fast)", function () {
+        var uuid = UUID.v4fast();
+        assert.equal(UUID.check(uuid).version, 4);
+        assert.equal(UUID.check(uuid).variant, 'rfc4122');
+    });
 
 });
 

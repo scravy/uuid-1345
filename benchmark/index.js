@@ -76,6 +76,11 @@ var scenarios = {
         return new Sync(UUID.v4);
     },
 
+    'sync-v4-fast': function () {
+        var UUID = require('../index');
+        return new Sync(UUID.v4fast);
+    },
+
     'sync-v5': function () {
         var UUID = require('../index');
         return new Sync(UUID.v5.bind(null, {
