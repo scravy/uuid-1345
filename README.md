@@ -140,7 +140,14 @@ You can specify a custom value for `clockSeq`.
 
 ### `UUID.v4([options], [callback])`
 
-Generates a random, version 4, UUID. Does not take any special options.
+Generates a random version 4 UUID.
+
+---
+
+### `UUID.v4fast()`
+
+Generated a pseudo-random version 4 UUID. Does not take any options.
+Does not offer an asynchronous interface.
 
 ---
 
