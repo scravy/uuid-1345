@@ -4,5 +4,4 @@
 /.npmcache
 /dist
 /coverage
-index.js
 *.log
