@@ -1,6 +1,6 @@
 {
   "name": "uuid-1345",
-  "version": "0.99.5",
+  "version": "0.99.6",
   "description": "Generate UUIDs of versions 1, 3, 4, and 5.",
   "keywords": [
     "uuid",
@@ -27,8 +27,7 @@
   },
   "homepage": "https://github.com/scravy/uuid-1345",
   "dependencies": {
-    "node-macaddress": "^0.2.4",
-    "sprintf-js": "^1.0.2"
+    "macaddress": "^0.2.7"
   },
   "devDependencies": {
     "async": "^0.9.0",
@@ -38,6 +37,7 @@
     "gulp-jshint": "^1.9.4",
     "gulp-mocha": "^2.0.1",
     "knuth-shuffle": "^1.0.1",
+    "sprintf-js": "^1.0.2",
     "node-uuid": "^1.4.3"
   }
 }

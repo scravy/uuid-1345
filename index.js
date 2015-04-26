@@ -1,4 +1,3 @@
-var sprintf = require('sprintf-js').sprintf;
 var crypto = require('crypto');
 
 // error codes
@@ -36,8 +35,9 @@ var byte2hex = [];
 
 // populate lookup tables
 for (var i = 0; i < 256; i++) {
-    hex2byte[sprintf('%02x', i).toLowerCase()] = i;
-    byte2hex[i] = sprintf('%02x', i).toLowerCase();
+    var hex = (i + 0x100).toString(16).substr(1);
+    hex2byte[hex] = i;
+    byte2hex[i] = hex;
 }
 
 function parseMacAddress(address) {
