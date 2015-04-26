@@ -55,7 +55,7 @@ function parseMacAddress(address) {
 var macAddress = randomHost;
 var macAddressLoaded = false;
 
-require('node-macaddress').one(function (err, result) {
+require('macaddress').one(function (err, result) {
     if (!err) {
         macAddress = parseMacAddress(result);
     }

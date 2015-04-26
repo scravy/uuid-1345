@@ -1,5 +1,5 @@
 var assert = require('assert');
-var macaddress = require('node-macaddress');
+var macaddress = require('macaddress');
 var UUID = require("../index");
 
 describe("UUID.v1", function () {
