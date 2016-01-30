@@ -55,16 +55,18 @@ function parseMacAddress(address) {
 var macAddress = randomHost;
 var macAddressLoaded = false;
 
-require('macaddress').one(function (err, result) {
-    if (!err) {
-        macAddress = parseMacAddress(result);
-    }
-    macAddressLoaded = true;
-});
+function loadMacAddress() {
+  require('macaddress').one(function (err, result) {
+      if (!err) {
+          macAddress = parseMacAddress(result);
+      }
+      macAddressLoaded = true;
+  });
+};
 
 // UUID class
 var UUID = function (uuid) {
-    
+
     var check = UUID.check(uuid);
     if (!check) {
         throw "not a UUID";
@@ -104,7 +106,7 @@ function error(message, callback) {
 
 // read stringified uuid into a Buffer
 function parse(string) {
-    
+
     var buffer = new Buffer(16);
     var j = 0;
     for (var i = 0; i < 16; i++) {
@@ -377,7 +379,7 @@ function uuidRandomFast() {
     var r3 = Math.random() * 0x100000000;
     var r4 = Math.random() * 0x100000000;
 
-    return byte2hex[ r1        & 0xff] + 
+    return byte2hex[ r1        & 0xff] +
            byte2hex[ r1 >>>  8 & 0xff] +
            byte2hex[ r1 >>> 16 & 0xff] +
            byte2hex[ r1 >>> 24 & 0xff] + '-' +
@@ -431,6 +433,9 @@ UUID.v1 = function v1(arg1, arg2) {
     var nodeId = options.mac;
 
     if (nodeId === undefined) {
+        if(!macAddressLoaded) {
+            loadMacAddress();
+        }
         if (!macAddressLoaded && callback) {
             setImmediate(function () {
                 UUID.v1(options, callback);
