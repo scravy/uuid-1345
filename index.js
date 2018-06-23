@@ -394,7 +394,7 @@ function uuidRandomFast() {
            byte2hex[ r4        & 0xff] +
            byte2hex[ r4 >>>  8 & 0xff] +
            byte2hex[ r4 >>> 16 & 0xff] +
-           byte2hex[ r1 >>> 24 & 0xff];
+           byte2hex[ r4 >>> 24 & 0xff];
 }
 
 function stringify(buffer) {
