@@ -1,9 +1,18 @@
 language: node_js
+os:
+  - linux
+  - osx
 node_js:
   - stable
+  - "10.5"
+  - "8.11"
+  - "6.14"
+  - "4.9"
   - "0.12"
   - "0.11"
   - "0.10"
+  - "0.9"
+  - "0.8"
   - iojs
   - iojs-v1.0.4
 before_install:
@@ -14,3 +23,4 @@ script:
   - gulp test
 after_script:
   - node benchmark 25 100000 50 100
+
