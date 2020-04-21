@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/scravy/uuid-1345",
   "dependencies": {
-    "macaddress": "^0.2.9"
+    "macaddress": "^0.4.0"
   },
   "devDependencies": {
     "async": "^0.9.0",
