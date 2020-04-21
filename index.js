@@ -86,7 +86,7 @@ function loadMacAddress() {
       }
       macAddressLoaded = true;
   });
-};
+}
 
 // UUID class
 var UUID = function (uuid) {

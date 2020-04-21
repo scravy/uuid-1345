@@ -14,7 +14,7 @@ describe("UUID.v3", function () {
     });
 
     it("generates a v3 UUID (sync)", function () {
-        assert.equal(UUID.check(UUID.v3({ name: "something", namespace: UUID.v4() }).version, 3));
+        assert.equal(UUID.check(UUID.v3({ name: "something", namespace: UUID.v4() })).version, 3);
     });
 
     it("generates the correct uuid for `http://github.com`", function (done) {
