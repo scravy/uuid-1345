@@ -4,18 +4,11 @@ os:
   - osx
 node_js:
   - stable
-  - "10.5"
-  - "8.11"
-  - "6.14"
-  - "4.9"
-  - iojs
-  - iojs-v1.0.4
-before_install:
-  - npm install -g gulp
+  - lts/*
+  - 10
+  - 8
 install:
   - npm install
 script:
-  - gulp test
-after_script:
-  - node benchmark 25 100000 50 100
+  - npm test
 
