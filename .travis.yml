@@ -12,4 +12,7 @@ install:
   - npm install
 script:
   - npm test
-
+jobs:
+  exclude:
+    - os: windows
+      node_js: stable
