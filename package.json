@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "gulp-mocha": "^8.0.0",
-    "node-gyp": "^7.0.0",
+    "node-gyp": "^9.4.0",
     "gulp-jshint": "^2.1.0",
     "jshint": "^2.11.1",
     "gulp": "^4.0.2"
