@@ -29,8 +29,8 @@
     "macaddress": "^0.5.1"
   },
   "devDependencies": {
-    "gulp-mocha": "^7.0.2",
-    "node-gyp": "^7.0.0",
+    "gulp-mocha": "^8.0.0",
+    "node-gyp": "^9.4.0",
     "gulp-jshint": "^2.1.0",
     "jshint": "^2.11.1",
     "gulp": "^4.0.2"
